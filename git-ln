@@ -1,0 +1,10 @@
+#!/bin/bash
+url=$(git remote -v | grep -v push | grep origin | sed 's|origin.*git@|https://|' | sed 's/\.com:/.com\//' | sed -e 's/(fetch)//' -e 's/(push)//' | sed 's/ //g')
+midUrl="/blob/master/"
+fullUrl="$url$midUrl"
+endUrl="$fullUrl$1"
+lineNumber='#L'
+number="$lineNumber$2"
+outputUrl="$endUrl$number"
+open "$outputUrl"
+echo "$outputUrl"
