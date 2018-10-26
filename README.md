@@ -19,4 +19,4 @@ Open the Line number on GitHub
 `git ln README.md 10`
 
 It opens the url that looks like this:
-
+`https://github.com/abemassry/git-ln/blob/master/git-ln#L9`
