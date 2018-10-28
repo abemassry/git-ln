@@ -1,10 +1,67 @@
 #!/bin/bash
-url=$(git remote -v | grep -v push | grep origin | sed 's|origin.*git@|https://|' | sed 's/\.com:/.com\//' | sed -e 's/(fetch)//' -e 's/(push)//' | sed 's/ //g')
-midUrl="/blob/master/"
-fullUrl="$url$midUrl"
-endUrl="$fullUrl$1"
-lineNumber='#L'
-number="$lineNumber$2"
-outputUrl="$endUrl$number"
-open "$outputUrl"
-echo "$outputUrl"
+
+prog_name="$(basename $0)"
+usage="usage: $prog_name [-r remote] [-b branch] [-o] <file> <linenum>"
+remote="origin"
+branch="$(git branch | cut -d' ' -f2 )"
+line_num_fragment=""
+open_url="false"
+
+# Option parsing
+while getopts ":r:b:oh" option
+do
+    case $option in
+	# Set remote
+	r  ) remote="$OPTARG" ;;
+	# Set branch
+	b  ) branch="$OPTARG" ;;
+	# Open URL in browser
+	o  ) open_url="true" ;;
+	# Help
+	h  ) echo "$usage"
+	     exit 0 ;;
+	# Illegal option
+        \? ) echo "$usage" >&2
+	     exit 1 ;;
+    esac
+done
+
+# Shift so we can get the filename and line number
+shift $(($OPTIND - 1))
+
+# Filename validation
+filename="$1"
+if [ -z "$filename" ]
+then
+    echo "$prog_name: missing filename" >&2
+    exit 1
+fi
+
+# Line number validation
+line_num="$2"
+if [ -n "$line_num" ]
+then
+    check=$(echo "$line_num" | grep -E '^[0-9]+$')
+    if [ -n "$check" ]
+    then
+	line_num_fragment="#L$line_num"
+    else
+	echo "$prog_name: invalid line number value $line_num" >&2
+	exit 1
+    fi
+fi
+
+# Some ugliness to change a git URL to https
+git_url="$(git remote get-url $remote | sed -e 's|git@|https://|;s|\.com:|.com/|;s|\.git||')"
+
+# URL construction
+path="/blob/$branch/$filename$line_num_fragment"
+full_url="$git_url$path"
+
+# Echo and (possibly) open
+echo "$full_url"
+
+if [ "$open_url" = "true" ]
+then
+    open "$full_url"
+fi
