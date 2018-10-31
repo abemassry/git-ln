@@ -3,7 +3,7 @@
 prog_name="$(basename $0)"
 usage="usage: $prog_name [-r remote] [-b branch] [-o] <file> <linenum>"
 remote="origin"
-branch="$(git branch | cut -d' ' -f2 )"
+branch="$(git rev-parse --abbrev-ref HEAD)"
 line_num_fragment=""
 open_url="false"
 
@@ -11,18 +11,18 @@ open_url="false"
 while getopts ":r:b:oh" option
 do
     case $option in
-	# Set remote
-	r  ) remote="$OPTARG" ;;
-	# Set branch
-	b  ) branch="$OPTARG" ;;
-	# Open URL in browser
-	o  ) open_url="true" ;;
-	# Help
-	h  ) echo "$usage"
-	     exit 0 ;;
-	# Illegal option
+        # Set remote
+        r  ) remote="$OPTARG" ;;
+        # Set branch
+        b  ) branch="$OPTARG" ;;
+        # Open URL in browser
+        o  ) open_url="true" ;;
+        # Help
+        h  ) echo "$usage"
+             exit 0 ;;
+        # Illegal option
         \? ) echo "$usage" >&2
-	     exit 1 ;;
+             exit 1 ;;
     esac
 done
 
