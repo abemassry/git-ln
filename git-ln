@@ -1,8 +1,9 @@
 #!/bin/bash
-url=$(git remote -v | grep -v push | grep origin | sed 's|origin.*git@|https://|' | sed 's/\.com:/.com\//' | sed -e 's/(fetch)//' -e 's/(push)//' | sed 's/ //g')
+url=$(git remote -v | grep -v push | grep origin | sed 's|origin.*git@|https://|' | sed 's/\.com:/.com\//' | sed -e 's/(fetch)//' -e 's/(push)//' -e 's/\.git//' | sed 's/ //g')
 midUrl="/blob/master/"
 fullUrl="$url$midUrl"
-endUrl="$fullUrl$1"
+path=$(git rev-parse --show-prefix)
+endUrl="$fullUrl$path$1"
 lineNumber='#L'
 number="$lineNumber$2"
 outputUrl="$endUrl$number"
